@@ -90,8 +90,18 @@ class Ice:
                     print("Process failed at row " +str(current_v.x) + ", column " + str(current_v.y))
                     exit(-1)
         
-        print("GT pattern has a valid ice model.")
+        print("GT pattern has a valid ice model.\n")
         self.visualize()
+        count = self.tally()
+        for row, row_count in enumerate(count):
+            print("Row " + str(row+1) + ": ", end='') 
+            print("NE = " + str(row_count[(-1,-1,1,1)]), end='; ')
+            print("SW = " + str(row_count[(1,1,-1,-1)]), end='; ')
+            print("NW = " + str(row_count[(-1,1,1,-1)]), end='; ')
+            print("SE = " + str(row_count[(1,-1,-1,1)]), end='; ')
+            print("NS = " + str(row_count[(-1,1,-1,1)]), end='; ')
+            print("EW = " + str(row_count[(1,-1,1,-1)]))
+
 
     def visualize(self):
         up_arrows = {1:'\u2191', -1:'\u2193'}
@@ -105,8 +115,19 @@ class Ice:
                 if v.y == 0:
                     print(right_arrows[v.right])
             if row[0].x == self.nrows:
-                print(''.join(["   " + up_arrows[v.down]+ "  " for v in row]))
+                print(''.join(["   " + up_arrows[v.down]+ "  " for v in row]+["\n"]))
 
+
+    def tally(self):
+        # directions of inward arrows: NE, SW, NW, SE, NS, EW
+        # represented as a tuple in clockwise order (NESW)
+        count = []
+        for row in self.vertices:
+            count_row = {(-1,-1,1,1):0, (1,1,-1,-1):0, (-1,1,1,-1):0, (1,-1,-1,1):0, (-1,1,-1,1):0, (1,-1,1,-1):0}
+            for v in row:
+                count_row[(v.up, v.right, v.down, v.left)] += 1
+            count.append(count_row)
+        return count
 
 
 class Vertex:
