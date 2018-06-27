@@ -18,5 +18,4 @@ You will be prompted to enter the GT pattern. Separate entries by a whitespace. 
 
 ## Limitations
 
-* Haven't implemented `visualize` function yet.
 * When a vertex can be filled in multiple ways, arrow directions are assigned in the order up-down-left-right (may need to test all possible cases/branches?)

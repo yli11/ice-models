@@ -14,10 +14,7 @@ class Ice:
         self.ncols = GT[0][0]+1
         self.vertices = []
         for i in range(1, self.nrows+1):
-            row = []
-            for j in range(self.ncols):
-                v = Vertex(i, self.ncols-1-j)
-                row.append(v)
+            row = [Vertex(i, self.ncols-1-j) for j in range(self.ncols)]
             self.vertices.append(row)
 
     def get_vertex(self, i, j):
@@ -94,6 +91,21 @@ class Ice:
                     exit(-1)
         
         print("GT pattern has a valid ice model.")
+        self.visualize()
+
+    def visualize(self):
+        up_arrows = {1:'\u2191', -1:'\u2193'}
+        left_arrows = {1:'\u2190', -1: '\u2192'}
+        right_arrows = {1:'\u2192', -1:'\u2190'}
+        down_arrows = {1:'\u2193', -1:'\u2191'}
+        for row in self.vertices:
+            print(''.join(["   " + up_arrows[v.up]+ "  " for v in row]))
+            for v in row:
+                print(left_arrows[v.left]+"("+str(v.x)+","+str(v.y)+")",end='')
+                if v.y == 0:
+                    print(right_arrows[v.right])
+            if row[0].x == self.nrows:
+                print(''.join(["   " + up_arrows[v.down]+ "  " for v in row]))
 
 
 
