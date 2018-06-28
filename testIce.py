@@ -30,8 +30,9 @@ class Ice:
 
     def fill_ice(self, GT, ice_type="square"):
         """ Start filling the ice model from the top-left corner.
-            Print result if successful (not implemented yet), otherwise, display an error message
-            Note: This process only change edges where no arrows have been placed (i.e. labeled by 0)
+            If ice modeled is succesfully filled out, print result and tally ice states;
+            display an error message otherwise.
+            Note: This process only changes edges where no arrows have been placed (i.e. labeled by 0)
         """
         
         # create boundary conditions of square ice
@@ -88,6 +89,7 @@ class Ice:
                 if not changed:
                     print("Ugh... No legal ice model is found.")
                     print("Process failed at row " +str(current_v.x) + ", column " + str(current_v.y))
+                    self.visualize()
                     exit(-1)
         
         print("GT pattern has a valid ice model.\n")
@@ -104,10 +106,10 @@ class Ice:
 
 
     def visualize(self):
-        up_arrows = {1:'\u2191', -1:'\u2193'}
-        left_arrows = {1:'\u2190', -1: '\u2192'}
-        right_arrows = {1:'\u2192', -1:'\u2190'}
-        down_arrows = {1:'\u2193', -1:'\u2191'}
+        up_arrows = {1:'\u2191', -1:'\u2193', 0:'\u2753'}
+        left_arrows = {1:'\u2190', -1: '\u2192', 0:'\u2753'}
+        right_arrows = {1:'\u2192', -1:'\u2190', 0:'\u2753'}
+        down_arrows = {1:'\u2193', -1:'\u2191', 0:'\u2753'}
         for row in self.vertices:
             print(''.join(["   " + up_arrows[v.up]+ "  " for v in row]))
             for v in row:
@@ -170,7 +172,7 @@ class Vertex:
         else:
             directions = {0: Vertex.change_up, 1: Vertex.change_down, 2: Vertex.change_left, 3: Vertex.change_right}
             # fill in the arrows in the order up-down-left-right
-            # if two arrows needs to be out and in, start from the one pointing out
+            # if two arrows need to be out and in, respectively, start from the one pointing out
             for k in zeros:
                 f = directions[k]
                 if diff > 0:
