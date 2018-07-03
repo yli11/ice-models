@@ -92,9 +92,9 @@ class Ice:
                     self.visualize()
                     exit(-1)
         
-        print("GT pattern has a valid ice model.\n")
-        self.visualize()
+        #print("GT pattern has a valid ice model.\n")
         count = self.tally()
+        """
         for row, row_count in enumerate(count):
             print("Row " + str(row+1) + ": ", end='') 
             print("NE = " + str(row_count[(-1,-1,1,1)]), end='; ')
@@ -103,6 +103,9 @@ class Ice:
             print("SE = " + str(row_count[(1,-1,-1,1)]), end='; ')
             print("NS = " + str(row_count[(-1,1,-1,1)]), end='; ')
             print("EW = " + str(row_count[(1,-1,1,-1)]))
+        print('\n')
+        """
+        return count
 
 
     def visualize(self):
@@ -193,9 +196,8 @@ def parseGT():
     while text != "":
         GT.append([int(x) for x in text.split()])
         text = input("Please enter the next line of of the GT pattern:")
-    ice_model = Ice(GT)
     print("\nGT pattern received. Start filling ice model now. \n")
-    return GT, ice_model
+    return GT
 
 
 
@@ -205,9 +207,12 @@ if __name__ == "__main__":
     parser.add_argument('-a','--alternating', action='store_true',
                         help="whether we want the right most column to have alternating signs")
     args = parser.parse_args()
-    GT, ice_model = parseGT()
+    GT = parseGT()
+    ice_model = Ice(GT)
     if args.alternating:
-        ice_model.fill_ice(GT, "alt")
+        count = ice_model.fill_ice(GT, "alt")
+        ice_model.visualize()
     else:
-        ice_model.fill_ice(GT, "square")
+        count = ice_model.fill_ice(GT, "square")
+        ice_model.visualize()
 
