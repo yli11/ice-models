@@ -38,6 +38,8 @@ def apply_weight(to_be_weighted, n):
                         prod *= Z[var_term[1]//2 - 1]**var_term[2]
             summands.append(prod)
     except:
+        print("Unexpected error:", sys.exc_info()[0])
+        print("The following term can't be evaulated:", end=' ')
         print(var_term)
     result = 0
     for t in summands:
@@ -68,14 +70,18 @@ if __name__ == "__main__":
     l = 0
     for gt in GT:
         l+= 1
-        print(gt)
-        ice_model = Ice(gt)
-        count = ice_model.fill_ice(gt, "alt")
-        terms, monomial = to_latex(count)
-        print(monomial)
-        summands.append(monomial)
-        to_be_weighted.append(terms)
-    print('# of patterns: ' +str(l)+'\n')
+        try:
+            ice_model = Ice(gt)
+            count = ice_model.fill_ice(gt, "alt")
+            terms, monomial = to_latex(count)
+            #print(monomial)
+            summands.append(monomial)
+            to_be_weighted.append(terms)
+        except :
+            print("The following patterns does not have a corresponding ice model:")
+            print(gt)
+            pass
+    print('# of patterns: ' +str(l))
     #print('+ '.join(summands))
 
     result = apply_weight(to_be_weighted, len(top_row) - 1)

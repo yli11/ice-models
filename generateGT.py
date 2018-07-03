@@ -17,7 +17,7 @@ class OrthogonalGTPatterns:
         # precondition check
         if top_row is not None:
             top_row = tuple(top_row)
-        if any(top_row[i] <= top_row[i+1] for i in range(len(top_row)-1)):
+        if strict and any(top_row[i] <= top_row[i+1] for i in range(len(top_row)-1)):
             raise ValueError("The top row must be strictly decreasing")
 
         self._row = top_row
@@ -78,7 +78,7 @@ class OrthogonalGTPatterns:
                     yield row[:]
 
                 else:
-                    for i in range(0, upper_row[pos]+1):
+                    for i in range(1, upper_row[pos]+1):
                         if self._strict and pos > 0 and i == row[pos-1]:
                             continue
                         ext_row = row + [i]
@@ -87,9 +87,9 @@ class OrthogonalGTPatterns:
                 continue
             # If it would create an invalid entry, backstep
             if ( pos > 0 and (row[pos] >= row[pos-1] \
-                    or (self._strict and row[pos] == row[pos-1]-1))  \
+                    or (self._strict and row[pos] == row[pos-1]-1)))  \
                     or row[pos] >= upper_row[pos] \
-                    or (self._k is not None and row[pos] >= self._k)):
+                    or (self._k is not None and row[pos] >= self._k):
                 row[pos] = upper_row[pos+1] - 1
                 pos -= 1
                 continue

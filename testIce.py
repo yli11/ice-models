@@ -70,7 +70,7 @@ class Ice:
                     else:
                         current_v.change_up(-1)
         except:
-            print("vertex "+str(i)+","+str(j)+" went wrong during initialization")
+            raise ValueError("vertex "+str(i)+","+str(j)+" went wrong during initialization")
             return current_v
 
         # fill in the remaining arrows
@@ -87,10 +87,10 @@ class Ice:
 
                 changed = current_v.fill_all()
                 if not changed:
-                    print("Ugh... No legal ice model is found.")
-                    print("Process failed at row " +str(current_v.x) + ", column " + str(current_v.y))
+                    #print("Ugh... No legal ice model is found.")
+                    raise ValueError("Process failed at row " +str(current_v.x) + ", column " + str(current_v.y))
                     self.visualize()
-                    exit(-1)
+                    return None
         
         #print("GT pattern has a valid ice model.\n")
         count = self.tally()
