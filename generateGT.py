@@ -72,7 +72,11 @@ class OrthogonalGTPatterns:
         while pos >= 0:
             if pos == row_len:
                 if row_index%2 ==0:
+                    if row_index == 0 and any(row[k] <= upper_row[k]-2 for k in range(len(row))):
+                        pos -= 1
+                        continue
                     yield row[:]
+
                 else:
                     for i in range(0, upper_row[pos]+1):
                         if self._strict and pos > 0 and i == row[pos-1]:
@@ -83,15 +87,14 @@ class OrthogonalGTPatterns:
                 continue
             # If it would create an invalid entry, backstep
             if ( pos > 0 and (row[pos] >= row[pos-1] \
-                    or (self._strict and row[pos] == row[pos-1]-1)) ) \
+                    or (self._strict and row[pos] == row[pos-1]-1))  \
                     or row[pos] >= upper_row[pos] \
-                    or (self._k is not None and row[pos] >= self._k):
+                    or (self._k is not None and row[pos] >= self._k)):
                 row[pos] = upper_row[pos+1] - 1
                 pos -= 1
                 continue
             row[pos] += 1
             pos += 1
-
 """
 GT1 = OrthogonalGTPatterns([3,2,1],True)
 GT2 = OrthogonalGTPatterns([2,1,0],True)
