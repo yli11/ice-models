@@ -84,13 +84,11 @@ class Ice:
                 if self.get_vertex(i, j+1):
                     left = self.get_vertex(i, j+1).right
                     current_v.change_left(-left)
-
                 changed = current_v.fill_all()
                 if not changed:
                     #print("Ugh... No legal ice model is found.")
-                    raise ValueError("Process failed at row " +str(current_v.x) + ", column " + str(current_v.y))
                     self.visualize()
-                    return None
+                    raise ValueError("Process failed at row " +str(current_v.x) + ", column " + str(current_v.y))
         
         #print("GT pattern has a valid ice model.\n")
         count = self.tally()
@@ -120,7 +118,7 @@ class Ice:
                 if v.y == 0:
                     print(right_arrows[v.right])
             if row[0].x == self.nrows:
-                print(''.join(["   " + up_arrows[v.down]+ "  " for v in row]+["\n"]))
+                print(''.join(["   " + down_arrows[v.down]+ "  " for v in row]+["\n"]))
 
 
     def tally(self):
