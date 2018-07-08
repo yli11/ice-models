@@ -78,7 +78,7 @@ class OrthogonalGTPatterns:
                     yield row[:]
 
                 else:
-                    for i in range(1, upper_row[pos]+1):
+                    for i in range(0, upper_row[pos]+1):
                         if self._strict and pos > 0 and i == row[pos-1]:
                             continue
                         ext_row = row + [i]
