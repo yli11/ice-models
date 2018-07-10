@@ -50,7 +50,7 @@ def apply_weight(to_be_weighted, n):
     result = 0
     for t in summands:
         result += t
-    return factor(expand(result))
+    return expand(result)
 
 
 def to_latex(count):
@@ -73,17 +73,17 @@ if __name__ == "__main__":
     summands = []
     to_be_weighted = []
     for gt in GT:
-        print(gt)
+        #print(gt)
         try:
             ice_model = Ice(gt)
             count = ice_model.fill_ice(gt, "alt")
-            ice_model.visualize()
+            #ice_model.visualize()
             terms, monomial = to_latex(count)
             #print(monomial)
             summands.append(monomial)
             to_be_weighted.append(terms)
         except :
-            print("The following patterns does not have a corresponding ice model:")
+            print("The following pattern does not have a corresponding ice model:")
             print(gt)
             pass
     print('# of patterns: ' +str(len(list(GT))))
