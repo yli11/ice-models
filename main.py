@@ -9,38 +9,44 @@ def apply_weight(to_be_weighted, n):
     """ Plug in weights and check polynomial sum
     """
     Z = numbered_symbols('z')
-    Z = [ next(Z) for i in range(n) ]
+    Z = [ next(Z) for i in range(2) ]
     t = symbols('t')
     summands = []
     try: 
         for monomial in to_be_weighted:
             prod = 1
             for var_term in monomial:
-                if var_term[1] == 1 or var_term[0] == 'SW' or var_term[0]=='NE':
+
+                # same for bar and no-bar rows
+                if var_term[1] == 1 or var_term[0] in ["NW", "EW", "B"]:
                     continue
-                elif var_term[1] % 2 == 0:
-                    if var_term[0] == 'EW':
-                        prod *= (1/(1+t*Z[var_term[1]//2 - 1]))**var_term[2]
+                elif var_term[0] == 'SW':
+                    prod *= t
+
+                elif var_term[1] % 2 == 0: #bar rows
+                    if var_term[0] == 'NE' or var_term[0] == 'SE':
+                        prod *= (1/Z[-(var_term[1]//2 - 1)])**var_term[2]
                     elif var_term[0] == 'NS':
-                        prod *= (1+t*Z[var_term[1]//2 - 1])**var_term[2]
-                    elif var_term[0] == 'NW':
-                        prod *= Z[var_term[1]//2 - 1]**var_term[2]
+                        x = (Z[-(var_term[1]//2 - 1)]*(t+1))**var_term[2]
+                        prod *= ((1/Z[-(var_term[1]//2 - 1)])*(t+1))**var_term[2]
+                    elif var_term[0] == "A":
+                        prod *= Z[-(var_term[1]//2 - 1)]**2
                     else:
-                        prod *= Z[var_term[1]//2 - 1]**var_term[2]
-                else:
-                    if var_term[0] == 'EW':
-                        prod *= (1+t*Z[var_term[1]//2 - 1])**var_term[2]
+                        print("Something's wrong with the ice model...", var_term[0])
+                        exit(-1)
+
+                else: #non-bar rows
+                    if var_term[0] == 'NE' or var_term[0] == 'SE':
+                        prod *= Z[-(var_term[1]//2 - 1)]**var_term[2]
                     elif var_term[0] == 'NS':
-                        prod *= (1/(1+t*Z[var_term[1]//2 - 1]))**var_term[2]
-                    elif var_term[0] == 'NW':
-                        prod *= (1/Z[var_term[1]//2 - 1])**var_term[2]
-                    else:
-                        prod *= Z[var_term[1]//2 - 1]**var_term[2]
+                        prod *= (Z[-(var_term[1]//2 - 1)]*(t+1))**var_term[2]
+            #print(expand(prod))
             summands.append(prod)
     except:
         print("Unexpected error:", sys.exc_info()[0])
         print("The following term can't be evaulated:", end=' ')
         print(var_term)
+
     result = 0
     for t in summands:
         result += t
@@ -52,7 +58,7 @@ def to_latex(count):
         Directions of inward arrows: NE, SW, NW, SE, NS, EW
     """
     terms = []
-    var_names = {(-1,-1,1,1):'NE', (1,1,-1,-1):'SW', (-1,1,1,-1):'NW', (1,-1,-1,1):'SW', (-1,1,-1,1):'NS', (1,-1,1,-1):'EW'}
+    var_names = {(-1,-1,1,1):'NE', (1,1,-1,-1):'SW', (-1,1,1,-1):'NW', (1,-1,-1,1):'SE', (-1,1,-1,1):'NS', (1,-1,1,-1):'EW', (1,-1): "A", (-1,1): "B"}
     for i, row in enumerate(count):
         reduced = {x:y for x,y in row.items() if y!=0}
         for key, val in reduced.items():
@@ -65,14 +71,13 @@ if __name__ == "__main__":
     top_row = [int(x) for x in text.split()]
     GT = OrthogonalGTPatterns(top_row,False)
     summands = []
-    latex_summands = []
     to_be_weighted = []
-    l = 0
     for gt in GT:
-        l+= 1
+        print(gt)
         try:
             ice_model = Ice(gt)
             count = ice_model.fill_ice(gt, "alt")
+            ice_model.visualize()
             terms, monomial = to_latex(count)
             #print(monomial)
             summands.append(monomial)
@@ -81,7 +86,7 @@ if __name__ == "__main__":
             print("The following patterns does not have a corresponding ice model:")
             print(gt)
             pass
-    print('# of patterns: ' +str(l))
+    print('# of patterns: ' +str(len(list(GT))))
     #print('+ '.join(summands))
 
     result = apply_weight(to_be_weighted, len(top_row) - 1)

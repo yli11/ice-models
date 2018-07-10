@@ -72,7 +72,8 @@ class OrthogonalGTPatterns:
         while pos >= 0:
             if pos == row_len:
                 if row_index%2 ==0:
-                    if row_index == 0 and any(row[k] <= upper_row[k]-2 for k in range(len(row))):
+                    if (row_index == 0 and any(row[k] <= upper_row[k]-2 for k in range(len(row))))\
+                        or row[-1] == 0:
                         pos -= 1
                         continue
                     yield row[:]
