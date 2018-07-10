@@ -63,7 +63,7 @@ def to_latex(count):
 if __name__ == "__main__":
     text = input("Please enter the top row of the GT pattern:")
     top_row = [int(x) for x in text.split()]
-    GT = OrthogonalGTPatterns(top_row,True)
+    GT = OrthogonalGTPatterns(top_row,False)
     summands = []
     latex_summands = []
     to_be_weighted = []
