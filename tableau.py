@@ -55,7 +55,8 @@ if __name__ == "__main__":
     text = input("Please enter the top row of the GT pattern:")
     top_row = [int(x) for x in text.split()]
     GT = OrthogonalGTPatterns(top_row, True)
-    # print(len(list(GT)))
     for gt in GT:
-        tableau = Tableau(gt, type='B', shifted=True)
-        print(tableau)
+        print(gt)
+        tableaux = Tableau(gt, type='B', shifted=True)
+        print(tableaux)
+    print(len(list(GT)))

@@ -11,16 +11,16 @@ class Ice:
     """
     def __init__(self, GT):
         self.nrows = len(GT)
-        self.ncols = GT[0][0]+1
+        self.ncols = GT[0][0]
         self.vertices = []
-        for i in range(1, self.nrows+1):
-            row = [Vertex(i, self.ncols-1-j) for j in range(self.ncols)]
+        for i in range(0, self.nrows):
+            row = [Vertex(i+1, self.ncols-j) for j in range(0, self.ncols)]
             self.vertices.append(row)
 
     def get_vertex(self, i, j):
         """ get the vertex indexed by (i, j) """
-        if 1 <= i <= self.nrows and 0 <= j < self.ncols:
-            v = self.vertices[i-1][-1-j]
+        if 0 <= i <= self.nrows and 1 <= j <= self.ncols:
+            v = self.vertices[i-1][-j]
             assert(v.x==i and v.y==j)
             return v
         else:
@@ -36,6 +36,8 @@ class Ice:
         """
         
         # create boundary conditions of square ice
+        # defunct now since columns start with 1
+        # can be changed similarly as the alternating case
         if ice_type == "square":
             for i in range(1, self.nrows+1):
                 left_v = self.get_vertex(i, self.ncols-1)
@@ -49,21 +51,17 @@ class Ice:
         # create boundary conditions when row i and \bar i have alternating signs on the right end
         elif ice_type == "alt":
             for i in range(1, self.nrows+1):
-                left_v = self.get_vertex(i, self.ncols-1)
+                left_v = self.get_vertex(i, self.ncols)
                 left_v.change_left(-1)
-                right_v = self.get_vertex(i, 0)
-                if i % 2 ==0:
-                    right_v.change_right(1)
-                else:
-                    right_v.change_right(-1)
-            for i in range(self.ncols):
+            # not initiating right most column, since it's uniquely determined by the 0-th row
+            for i in range(1, self.ncols+1):
                 bottom_v = self.get_vertex(self.nrows, i)
                 bottom_v.change_down(1)
 
         # start filling ice models based on the GT pattern
         try:
             for i in range(1, self.nrows+1):
-                for j in range(self.ncols-1, -1, -1):
+                for j in range(self.ncols, 0, -1):
                     current_v = self.get_vertex(i, j)
                     if j in GT[i-1]:
                         current_v.change_up(1)
@@ -75,7 +73,7 @@ class Ice:
 
         # fill in the remaining arrows
         for i in range(1, self.nrows+1):
-            for j in range(self.ncols-1, -1, -1):
+            for j in range(self.ncols, 0, -1):
                 # first, load the adjacent arrows from initialization (all upward arrows should already be filled at this point, arrows right of the current vertex should be empty except for the right boundary)
                 current_v = self.get_vertex(i, j)
                 if self.get_vertex(i+1, j):
@@ -92,7 +90,7 @@ class Ice:
         
         #print("GT pattern has a valid ice model.\n")
         count = self.tally()
-        """
+        #"""
         for row, row_count in enumerate(count):
             print("Row " + str(row+1) + ": ", end='') 
             print("NE = " + str(row_count[(-1,-1,1,1)]), end='; ')
@@ -100,9 +98,12 @@ class Ice:
             print("NW = " + str(row_count[(-1,1,1,-1)]), end='; ')
             print("SE = " + str(row_count[(1,-1,-1,1)]), end='; ')
             print("NS = " + str(row_count[(-1,1,-1,1)]), end='; ')
-            print("EW = " + str(row_count[(1,-1,1,-1)]))
+            print("EW = " + str(row_count[(1,-1,1,-1)]), end='; ')
+            print("A = " + str(row_count[(1,-1)]), end='; ')
+            print("B = " + str(row_count[(-1,1)]))
+
         print('\n')
-        """
+        #"""
         return count
 
 
@@ -115,7 +116,7 @@ class Ice:
             print(''.join(["   " + up_arrows[v.up]+ "  " for v in row]))
             for v in row:
                 print(left_arrows[v.left]+"("+str(v.x)+","+str(v.y)+")",end='')
-                if v.y == 0:
+                if v.y == 1:
                     print(right_arrows[v.right])
             if row[0].x == self.nrows:
                 print(''.join(["   " + down_arrows[v.down]+ "  " for v in row]+["\n"]))
@@ -126,9 +127,15 @@ class Ice:
         # represented as a tuple in clockwise order (NESW)
         count = []
         for row in self.vertices:
-            count_row = {(-1,-1,1,1):0, (1,1,-1,-1):0, (-1,1,1,-1):0, (1,-1,-1,1):0, (-1,1,-1,1):0, (1,-1,1,-1):0}
+            count_row = {(-1,-1,1,1):0, (1,1,-1,-1):0, (-1,1,1,-1):0, (1,-1,-1,1):0, (-1,1,-1,1):0, (1,-1,1,-1):0, (1,-1): 0, (-1,1): 0}
             for v in row:
                 count_row[(v.up, v.right, v.down, v.left)] += 1
+
+                # counting U-turn vertices
+                if v.x % 2 == 0 and v.y == 1:
+                    right_arr_1 = v.right
+                    right_arr_2 = self.get_vertex(v.x+1, 1).right
+                    count_row[(right_arr_1, right_arr_2)] += 1
             count.append(count_row)
         return count
 
@@ -210,6 +217,7 @@ if __name__ == "__main__":
     if args.alternating:
         count = ice_model.fill_ice(GT, "alt")
         ice_model.visualize()
+
     else:
         count = ice_model.fill_ice(GT, "square")
         ice_model.visualize()
