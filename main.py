@@ -9,14 +9,14 @@ def apply_weight(to_be_weighted, n):
     """ Plug in weights and check polynomial sum
     """
     Z = numbered_symbols('z')
-    Z = [ next(Z) for i in range(2) ]
+    Z = [ next(Z) for i in range(n) ]
     t = symbols('t')
     summands = []
     try: 
         for monomial in to_be_weighted:
             prod = 1
             for var_term in monomial:
-
+                i = var_term[1]//2 - 1
                 # same for bar and no-bar rows
                 if var_term[1] == 1 or var_term[0] in ["NW", "EW", "B"]:
                     continue
@@ -25,23 +25,24 @@ def apply_weight(to_be_weighted, n):
 
                 elif var_term[1] % 2 == 0: #bar rows
                     if var_term[0] == 'SE':
-                        prod *= (1/Z[-(var_term[1]//2 - 1)])**var_term[2]
+                        prod *= (1/Z[-i])**var_term[2]
                     elif var_term[0] == 'NE':
-                        prod *= ( (1/Z[-(var_term[1]//2 - 1)]) / t**(2*(var_term[1]//2 - 1)))**var_term[2]
+                        prod *= (1/Z[-i])**var_term[2]
                     elif var_term[0] == 'NS':
-                        x = (Z[-(var_term[1]//2 - 1)]*(t+1))**var_term[2]
-                        prod *= ((1/Z[-(var_term[1]//2 - 1)])*(t+1))**var_term[2]
+                        prod *= ((1/Z[-i])*(t+1))**var_term[2]
                     elif var_term[0] == "A":
-                        prod *= Z[-(var_term[1]//2 - 1)]**2
+                        prod *= Z[-i]**2
                     else:
                         print("Something's wrong with the ice model...", var_term[0])
                         exit(-1)
 
                 else: #non-bar rows
-                    if var_term[0] == 'NE' or var_term[0] == 'SE':
-                        prod *= Z[-(var_term[1]//2 - 1)]**var_term[2]
+                    if var_term[0] == 'SE' or var_term[0] == 'NE':
+                        prod *= Z[-i]**var_term[2]
+                    #elif var_term[0] == 'NE':
+                        #prod *= ( Z[-i] / t )**var_term[2]
                     elif var_term[0] == 'NS':
-                        prod *= (Z[-(var_term[1]//2 - 1)]*(t+1))**var_term[2]
+                        prod *= (Z[-i]*(t+1))**var_term[2]
             #print(expand(prod))
             summands.append(prod)
     except:
@@ -52,7 +53,64 @@ def apply_weight(to_be_weighted, n):
     result = 0
     for t in summands:
         result += t
-    return expand(result)
+    return factor(expand(result))
+
+def apply_weight_2(to_be_weighted, n):
+    """ Plug in weights and check polynomial sum
+    """
+    Z = numbered_symbols('z')
+    T = numbered_symbols('t')
+    Z = [ next(Z) for i in range(n) ]
+    T = [ next(T) for i in range(n) ]
+    summands = []
+    try: 
+        for monomial in to_be_weighted:
+            prod = 1
+            for var_term in monomial:
+                i = var_term[1]//2 - 1
+
+                # same for bar and no-bar rows
+                if var_term[1] == 1 or var_term[0] in ["NW", "EW", "B"]:
+                    continue
+
+                elif var_term[1] % 2 == 0: #bar rows
+                    if var_term[0] == 'SE':
+                        prod *= (1/Z[-i])**var_term[2]
+                    elif var_term[0] == 'NE':
+                        prod *= (1/Z[-i])**var_term[2]
+                    elif var_term[0] == 'NS':
+                        prod *= ((1/Z[-i])*(T[i]+1))**var_term[2]
+                    elif var_term[0] == "A":
+                        prod *= Z[-i]**2
+                    elif var_term[0] == 'SW':
+                        prod*= T[i]
+                    else:
+                        print("Something's wrong with the ice model...", var_term[0])
+                        exit(-1)
+
+                else: #non-bar rows
+                    if var_term[0] == 'SE' or var_term[0] == 'NE':
+                        prod *= Z[-i]**var_term[2]
+                    #elif var_term[0] == 'NE':
+                        #prod *= ( Z[-i] / t )**var_term[2]
+                    elif var_term[0] == 'NS':
+                        prod *= (Z[-i]*(T[i]+1))**var_term[2]
+                    elif var_term[0] == 'SW':
+                        prod *= T[i]
+                    else:
+                        print("Something's wrong with the ice model...", var_term[0])
+                        exit(-1)
+            #print(expand(prod))
+            summands.append(prod)
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+        print("The following term can't be evaulated:", end=' ')
+        print(var_term)
+
+    result = 0
+    for t in summands:
+        result += t
+    return factor(expand(result))
 
 
 def to_latex(count):
@@ -84,13 +142,13 @@ if __name__ == "__main__":
             #print(monomial)
             summands.append(monomial)
             to_be_weighted.append(terms)
-        except :
+        except:
             print("The following pattern does not have a corresponding ice model:")
             print(gt)
             pass
-    print('# of patterns: ' +str(len(list(GT))))
+    print('# of patterns: ' + str(len(list(GT))))
     #print('+ '.join(summands))
 
-    result = apply_weight(to_be_weighted, len(top_row) - 1)
+    result = apply_weight_2(to_be_weighted, len(top_row) - 1)
     print(result)
 
