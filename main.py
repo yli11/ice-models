@@ -24,8 +24,10 @@ def apply_weight(to_be_weighted, n):
                     prod *= t
 
                 elif var_term[1] % 2 == 0: #bar rows
-                    if var_term[0] == 'NE' or var_term[0] == 'SE':
+                    if var_term[0] == 'SE':
                         prod *= (1/Z[-(var_term[1]//2 - 1)])**var_term[2]
+                    elif var_term[0] == 'NE':
+                        prod *= ( (1/Z[-(var_term[1]//2 - 1)]) / t**(2*(var_term[1]//2 - 1)))**var_term[2]
                     elif var_term[0] == 'NS':
                         x = (Z[-(var_term[1]//2 - 1)]*(t+1))**var_term[2]
                         prod *= ((1/Z[-(var_term[1]//2 - 1)])*(t+1))**var_term[2]
