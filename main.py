@@ -16,7 +16,11 @@ def apply_weight(to_be_weighted, n):
         for monomial in to_be_weighted:
             prod = 1
             for var_term in monomial:
-                i = var_term[1]//2 - 1
+                # extract row index and exponents, note: i === n - actual_i, where 
+                # actual_i is index on z_i (starting from 0)
+                i = int((var_term[1]+0.5)//2)
+                exp = var_term[2]
+
                 # same for bar and no-bar rows
                 if var_term[1] == 1 or var_term[0] in ["NW", "EW", "B"]:
                     continue
@@ -25,24 +29,25 @@ def apply_weight(to_be_weighted, n):
 
                 elif var_term[1] % 2 == 0: #bar rows
                     if var_term[0] == 'SE':
-                        prod *= (1/Z[-i])**var_term[2]
+                        prod *= (1/Z[-i])**exp
                     elif var_term[0] == 'NE':
-                        prod *= (1/Z[-i])**var_term[2]
+                        prod *= (1/Z[-i])**exp
                     elif var_term[0] == 'NS':
-                        prod *= ((1/Z[-i])*(t+1))**var_term[2]
-                    elif var_term[0] == "A":
-                        prod *= (Z[-i]**2)**var_term[2]
+                        prod *= ((1/Z[-i])*(t+1))**exp
+
+                    elif var_term[0] == "A": # U-turn vertices are associated with bar rows
+                        prod *= (Z[-i]**2)**exp
                     else:
                         print("Something's wrong with the ice model...", var_term[0])
                         exit(-1)
 
                 else: #non-bar rows
                     if var_term[0] == 'SE' or var_term[0] == 'NE':
-                        prod *= Z[-i]**var_term[2]
+                        prod *= Z[-i]**exp
                     #elif var_term[0] == 'NE':
-                        #prod *= ( Z[-i] / t )**var_term[2]
+                        #prod *= ( Z[-i] / t )**exp
                     elif var_term[0] == 'NS':
-                        prod *= (Z[-i]*(t+1))**var_term[2]
+                        prod *= (Z[-i]*(t+1))**exp
             #print(expand(prod))
             summands.append(prod)
     except:
@@ -68,7 +73,8 @@ def apply_weight_2(to_be_weighted, n):
             #print(monomial)
             prod = 1
             for var_term in monomial:
-                i = var_term[1]//2 - 1
+                i = int((var_term[1]+0.5)//2)
+                exp = var_term[2]
 
                 # same for bar and no-bar rows
                 if var_term[1] == 1 or var_term[0] in ["NW", "EW", "B"]:
@@ -76,28 +82,29 @@ def apply_weight_2(to_be_weighted, n):
 
                 elif var_term[1] % 2 == 0: #bar rows
                     if var_term[0] == 'SE':
-                        prod *= (1/Z[-i])**var_term[2]
+                        prod *= (1/Z[-i])**exp
                     elif var_term[0] == 'NE':
-                        prod *= ( (1/Z[-i]) / T[i]**(1-i))**var_term[2]
+                        prod *= (1/Z[-i])**exp
                     elif var_term[0] == 'NS':
-                        prod *= ((1/Z[-i])*(T[i]+1))**var_term[2]
+                        prod *= ((1/Z[-i])*(T[-i]+1))**exp
+                    elif var_term[0] == 'SW':
+                        prod*= T[-i]**exp
+
                     elif var_term[0] == "A":
                         prod *= Z[-i]**2
-                    elif var_term[0] == 'SW':
-                        prod*= ((1/Z[i])*T[i]**(1-i))**var_term[2]
                     else:
                         print("Something's wrong with the ice model...", var_term[0])
                         exit(-1)
 
                 else: #non-bar rows
                     if var_term[0] == 'SE':
-                        prod *= Z[-i]**var_term[2]
+                        prod *= Z[-i]**exp
                     elif var_term[0] == 'NE':
-                        prod *= ( Z[-i] / T[i]**(1-i) )**var_term[2]
+                        prod *= Z[-i]**exp
                     elif var_term[0] == 'NS':
-                        prod *= (Z[-i]*(T[i]+1))**var_term[2]
+                        prod *= (Z[-i]*(T[-i]+1))**exp
                     elif var_term[0] == 'SW':
-                        prod *= (Z[i]*T[i]**(1-i))**var_term[2]
+                        prod *= T[-i]**exp
                     else:
                         print("Something's wrong with the ice model...", var_term[0])
                         exit(-1)
@@ -150,6 +157,6 @@ if __name__ == "__main__":
     print('# of patterns: ' + str(len(list(GT))))
     #print('+ '.join(summands))
 
-    result = apply_weight(to_be_weighted, len(top_row) - 1)
+    result = apply_weight_2(to_be_weighted, len(top_row) - 1)
     print(result)
 
