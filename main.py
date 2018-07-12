@@ -22,32 +22,41 @@ def apply_weight(to_be_weighted, n):
                 exp = var_term[2]
 
                 # same for bar and no-bar rows
-                if var_term[1] == 1 or var_term[0] in ["NW", "EW", "B"]:
+                if var_term[1] == 1 or var_term[0] in ["NW", "EW"]:
                     continue
-                elif var_term[0] == 'SW':
-                    prod *= t**var_term[2]
+                elif var_term[1] == 1 and var_term[0] == 'NE':
+                    prod *= 0
+                #elif var_term[0] == 'SW':
+                    #prod *= t**var_term[2]
 
                 elif var_term[1] % 2 == 0: #bar rows
                     if var_term[0] == 'SE':
-                        prod *= (1/Z[-i])**exp
+                        prod *= (t*Z[-i])**exp
                     elif var_term[0] == 'NE':
-                        prod *= (1/Z[-i])**exp
+                        prod *= (Z[-i])**exp
                     elif var_term[0] == 'NS':
-                        prod *= ((1/Z[-i])*(t+1))**exp
+                        prod *= (Z[-i]*(t+1))**exp
+                    elif var_term[0] == 'SW':
+                        prod *= 1
 
                     elif var_term[0] == "A": # U-turn vertices are associated with bar rows
-                        prod *= (Z[-i]**2)**exp
+                        prod *= (Z[-i])**(-1)
+                    elif var_term[0] == 'B':
+                        prod *= t* Z[-i]
                     else:
                         print("Something's wrong with the ice model...", var_term[0])
                         exit(-1)
 
                 else: #non-bar rows
-                    if var_term[0] == 'SE' or var_term[0] == 'NE':
-                        prod *= Z[-i]**exp
-                    #elif var_term[0] == 'NE':
-                        #prod *= ( Z[-i] / t )**exp
+                    if var_term[0] == 'SE':
+                        prod *= Z[-i]**(-exp)
+                    elif var_term[0] == 'NE':
+                        prod *= Z[-i]**(-exp)
                     elif var_term[0] == 'NS':
-                        prod *= (Z[-i]*(t+1))**exp
+                        prod *= (Z[-i]**(-1)*(t+1))**exp
+                    elif var_term[0] == 'SW':
+                        prod *= t**exp
+
             #print(expand(prod))
             summands.append(prod)
     except:
