@@ -18,7 +18,7 @@ def apply_weight(to_be_weighted, n):
             for var_term in monomial:
                 # extract row index and exponents, note: i === n - actual_i, where 
                 # actual_i is index on z_i (starting from 0)
-                i = int((var_term[1]+0.5)//2)
+                i = int((var_term[1]+0.5)//2) - 1
                 exp = var_term[2]
 
                 # same for bar and no-bar rows
@@ -31,29 +31,29 @@ def apply_weight(to_be_weighted, n):
 
                 elif var_term[1] % 2 == 0: #bar rows
                     if var_term[0] == 'SE':
-                        prod *= (t*Z[-i])**exp
+                        prod *= (t*Z[i])**exp
                     elif var_term[0] == 'NE':
-                        prod *= (Z[-i])**exp
+                        prod *= (Z[i])**exp
                     elif var_term[0] == 'NS':
-                        prod *= (Z[-i]*(t+1))**exp
+                        prod *= (Z[i]*(t+1))**exp
                     elif var_term[0] == 'SW':
                         prod *= 1
 
                     elif var_term[0] == "A": # U-turn vertices are associated with bar rows
-                        prod *= (Z[-i])**(-1)
+                        prod *= (Z[i])**(-1)
                     elif var_term[0] == 'B':
-                        prod *= t* Z[-i]
+                        prod *= t*Z[i]
                     else:
                         print("Something's wrong with the ice model...", var_term[0])
                         exit(-1)
 
                 else: #non-bar rows
                     if var_term[0] == 'SE':
-                        prod *= Z[-i]**(-exp)
+                        prod *= Z[i]**(-exp)
                     elif var_term[0] == 'NE':
-                        prod *= Z[-i]**(-exp)
+                        prod *= Z[i]**(-exp)
                     elif var_term[0] == 'NS':
-                        prod *= (Z[-i]**(-1)*(t+1))**exp
+                        prod *= (Z[i]**(-1)*(t+1))**exp
                     elif var_term[0] == 'SW':
                         prod *= t**exp
 
