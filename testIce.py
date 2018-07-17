@@ -56,7 +56,7 @@ class Ice:
             for i in range(1, self.nrows+1):
                 left_v = self.get_vertex(i, self.ncols)
                 left_v.change_left(-1)
-            # not initiating right most column, since it's uniquely determined by the 0-th row
+            # not initiating right most column, since it's uniquely determined by the # of row entries
             for i in range(1, self.ncols+1):
                 bottom_v = self.get_vertex(self.nrows, i)
                 bottom_v.change_down(1)
