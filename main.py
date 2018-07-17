@@ -144,16 +144,16 @@ def to_latex(count):
     return terms, latex
 
 if __name__ == "__main__":
-    # parser = argparse.ArgumentParser(
-    #     description='Usage: python3 main.py <-i> <pattern>')
-    # parser.add_argument('-i','--index', action='store_true',
-    #                     help="Replace uniform t with t_i's based on the row index of the vertex.")
-    # parser.add_argument('input', nargs='+', type=int, help='Top row of the GT pattern.')
-    # args = parser.parse_args()
+    parser = argparse.ArgumentParser(
+        description='Usage: python3 main.py <-i> <pattern>')
+    parser.add_argument('-i','--index', action='store_true',
+                        help="Replace uniform t with t_i's based on the row index of the vertex.")
+    parser.add_argument('input', nargs='+', type=int, help='Top row of the GT pattern.')
+    args = parser.parse_args()
 
-    text = input("Please enter the top row of the GT pattern:")
-    #top_row = args.input #[int(x) for x in text.split()]
-    top_row = [int(x) for x in text.split()]
+    #text = input("Please enter the top row of the GT pattern:")
+    top_row = args.input #[int(x) for x in text.split()]
+    #top_row = [int(x) for x in text.split()]
     GT = OrthogonalGTPatterns(top_row, True)
     summands = []
     to_be_weighted = []
@@ -173,8 +173,8 @@ if __name__ == "__main__":
             pass
     print('# of patterns: ' + str(len(list(GT))))
     #print('+ '.join(summands))
-    #if args.index:
-    if False:
+    if args.index:
+    #if False:
         result = apply_weight_2(to_be_weighted, len(top_row) - 1)
     else:
         result = apply_weight(to_be_weighted, len(top_row) - 1)
