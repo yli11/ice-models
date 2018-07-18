@@ -16,8 +16,7 @@ def apply_weight(to_be_weighted, n):
         for monomial in to_be_weighted:
             prod = 1
             for var_term in monomial:
-                # extract row index and exponents, note: i === n - actual_i, where 
-                # actual_i is index on z_i (starting from 0)
+                # extract row index and exponents, note: i starts from 0
                 i = int((var_term[1]+0.5)//2) - 1
                 exp = var_term[2]
 
@@ -40,7 +39,7 @@ def apply_weight(to_be_weighted, n):
                         prod *= 1
 
                     elif var_term[0] == "A": # U-turn vertices are associated with bar rows
-                        prod *= (Z[i])**(-1)*(1+t*Z[i])/(1+t*Z[i]**2)
+                        prod *= (1/Z[i])*(1+t*Z[i])/(1+t*Z[i]**2)
                     elif var_term[0] == 'B':
                         prod *= t*Z[i]*(1+t*Z[i])/(1+t*Z[i]**2)
                     else:
@@ -100,7 +99,7 @@ def apply_weight_2(to_be_weighted, n):
                         prod*= T[i]**exp
 
                     elif var_term[0] == "A":
-                        prod *= (Z[i]**2)
+                        prod *= Z[i]**2
                     else:
                         print("Something's wrong with the ice model...", var_term[0])
                         exit(-1)
@@ -145,28 +144,36 @@ def to_latex(count):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='Usage: python3 main.py <-i> <pattern>')
+        description='Usage: python3 main.py <pattern> <-i> <-f>')
     parser.add_argument('-i','--index', action='store_true',
                         help="Replace uniform t with t_i's based on the row index of the vertex.")
     parser.add_argument('-f','--factor', action='store_true',
                         help="Return factored result.")
+    parser.add_argument('--KT', action='store_true',
+                        help="Calculate partition function for KT ice instead.")
     parser.add_argument('input', nargs='+', type=int, help='Top row of the GT pattern.')
     args = parser.parse_args()
 
     #text = input("Please enter the top row of the GT pattern:")
     top_row = args.input #[int(x) for x in text.split()]
     #top_row = [int(x) for x in text.split()]
-    GT = OrthogonalGTPatterns(top_row, True)
+    if args.KT:
+        GT = OrthogonalGTPatterns(top_row, True, 1)
+    else:
+        GT = OrthogonalGTPatterns(top_row, True, 0)
     summands = []
     to_be_weighted = []
     for gt in GT:
-        #print(gt)
+        print(gt)
         try:
-            ice_model = Ice(gt)
-            count = ice_model.fill_ice(gt, "alt")
-            #ice_model.visualize()
+            if args.KT:
+                ice_model = Ice(gt, "KT")
+            else:
+                ice_model = Ice(gt, "alt")
+            count = ice_model.fill_ice(gt)
+            ice_model.visualize()
             terms, monomial = to_latex(count)
-            #print(monomial)
+            print(monomial, '\n')
             summands.append(monomial)
             to_be_weighted.append(terms)
         except:
@@ -175,6 +182,7 @@ if __name__ == "__main__":
             pass
     print('# of patterns: ' + str(len(list(GT))))
     #print('+ '.join(summands))
+    """
     if args.index:
         result = apply_weight_2(to_be_weighted, len(top_row) - 1)
     else:
@@ -183,4 +191,5 @@ if __name__ == "__main__":
         print(factor(result))
     else:
         print(result)
+    """
 
