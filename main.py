@@ -40,9 +40,9 @@ def apply_weight(to_be_weighted, n):
                         prod *= 1
 
                     elif var_term[0] == "A": # U-turn vertices are associated with bar rows
-                        prod *= (Z[i])**(-1)
+                        prod *= (Z[i])**(-1)*(1+t*Z[i])/(1+t*Z[i]**2)
                     elif var_term[0] == 'B':
-                        prod *= t*Z[i]
+                        prod *= t*Z[i]*(1+t*Z[i])/(1+t*Z[i]**2)
                     else:
                         print("Something's wrong with the ice model...", var_term[0])
                         exit(-1)
@@ -67,7 +67,7 @@ def apply_weight(to_be_weighted, n):
     result = 0
     for t in summands:
         result += t
-    return factor(expand(result))
+    return expand(result)
 
 def apply_weight_2(to_be_weighted, n):
     """ Plug in weights and check polynomial sum
@@ -91,29 +91,29 @@ def apply_weight_2(to_be_weighted, n):
 
                 elif var_term[1] % 2 == 0: #bar rows
                     if var_term[0] == 'SE':
-                        prod *= (1/Z[-i])**exp
+                        prod *= (1/Z[i])**exp
                     elif var_term[0] == 'NE':
-                        prod *= (1/Z[-i])**exp
+                        prod *= (1/Z[i])**exp
                     elif var_term[0] == 'NS':
-                        prod *= ((1/Z[-i])*(T[-i]+1))**exp
+                        prod *= ((1/Z[i])*(T[i]+1))**exp
                     elif var_term[0] == 'SW':
-                        prod*= T[-i]**exp
+                        prod*= T[i]**exp
 
                     elif var_term[0] == "A":
-                        prod *= Z[-i]**2
+                        prod *= (Z[i]**2)
                     else:
                         print("Something's wrong with the ice model...", var_term[0])
                         exit(-1)
 
                 else: #non-bar rows
                     if var_term[0] == 'SE':
-                        prod *= Z[-i]**exp
+                        prod *= Z[i]**exp
                     elif var_term[0] == 'NE':
-                        prod *= Z[-i]**exp
+                        prod *= Z[i]**exp
                     elif var_term[0] == 'NS':
-                        prod *= (Z[-i]*(T[-i]+1))**exp
+                        prod *= (Z[i]*(T[i]+1))**exp
                     elif var_term[0] == 'SW':
-                        prod *= T[-i]**exp
+                        prod *= T[i]**exp
                     else:
                         print("Something's wrong with the ice model...", var_term[0])
                         exit(-1)
@@ -148,6 +148,8 @@ if __name__ == "__main__":
         description='Usage: python3 main.py <-i> <pattern>')
     parser.add_argument('-i','--index', action='store_true',
                         help="Replace uniform t with t_i's based on the row index of the vertex.")
+    parser.add_argument('-f','--factor', action='store_true',
+                        help="Return factored result.")
     parser.add_argument('input', nargs='+', type=int, help='Top row of the GT pattern.')
     args = parser.parse_args()
 
@@ -158,7 +160,7 @@ if __name__ == "__main__":
     summands = []
     to_be_weighted = []
     for gt in GT:
-        print(gt)
+        #print(gt)
         try:
             ice_model = Ice(gt)
             count = ice_model.fill_ice(gt, "alt")
@@ -174,9 +176,11 @@ if __name__ == "__main__":
     print('# of patterns: ' + str(len(list(GT))))
     #print('+ '.join(summands))
     if args.index:
-    #if False:
         result = apply_weight_2(to_be_weighted, len(top_row) - 1)
     else:
         result = apply_weight(to_be_weighted, len(top_row) - 1)
-    print(result)
+    if args.factor:
+        print(factor(result))
+    else:
+        print(result)
 

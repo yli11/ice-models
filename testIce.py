@@ -9,10 +9,11 @@ class Ice:
             vertices: a list of Vertex objects
     """
 
-    def __init__(self, GT):
+    def __init__(self, GT, ice_type="alt"):
         self.nrows = len(GT)
         self.ncols = GT[0][0]
         self.vertices = []
+        self.ice_type = ice_type
         for i in range(0, self.nrows):
             row = [Vertex(i+1, self.ncols-j) for j in range(0, self.ncols)]
             self.vertices.append(row)
@@ -28,7 +29,7 @@ class Ice:
 
 
 
-    def fill_ice(self, GT, ice_type="alt"):
+    def fill_ice(self, GT):
         """ Start filling the ice model from the top-left corner.
             If ice modeled is succesfully filled out, print result and tally ice states;
             display an error message otherwise.
@@ -38,7 +39,7 @@ class Ice:
         # create boundary conditions of square ice
         # defunct now since columns start with 1
         # can be changed similarly as the alternating case
-        if ice_type == "square":
+        if self.ice_type == "square":
             if 0 in [elt for row in GT for elt in row]:
                 print("Current model doesn't have column 0. Please add 1 to all entries for square ice.\n")
                 exit(0)
@@ -52,7 +53,7 @@ class Ice:
                 bottom_v.change_down(1)
 
         # create boundary conditions when row i and \bar i have alternating signs on the right end
-        elif ice_type == "alt":
+        elif self.ice_type == "alt" or self.ice_type == "KT":
             for i in range(1, self.nrows+1):
                 left_v = self.get_vertex(i, self.ncols)
                 left_v.change_left(-1)
@@ -92,7 +93,7 @@ class Ice:
                     raise ValueError("Process failed at row " +str(current_v.x) + ", column " + str(current_v.y))
         
         #print("GT pattern has a valid ice model.\n")
-        count = self.tally(ice_type)
+        count = self.tally()
         return count
 
 
@@ -111,15 +112,15 @@ class Ice:
                 print(''.join(["   " + down_arrows[v.down]+ "  " for v in row]+["\n"]))
 
 
-    def tally(self, ice_type="alt"):
+    def tally(self):
         # directions of inward arrows: NE, SW, NW, SE, NS, EW
         # represented as a tuple in clockwise order (NESW)
         count = []
         for row in self.vertices:
-            count_row = {(-1,-1,1,1):0, (1,1,-1,-1):0, (-1,1,1,-1):0, (1,-1,-1,1):0, (-1,1,-1,1):0, (1,-1,1,-1):0, (1,-1): 0, (-1,1): 0}
+            count_row = {(-1,-1,1,1):0, (1,1,-1,-1):0, (-1,1,1,-1):0, (1,-1,-1,1):0, (-1,1,-1,1):0, (1,-1,1,-1):0, (1,-1): 0, (-1,1): 0, (1,1):0}
             for v in row:
                 count_row[(v.up, v.right, v.down, v.left)] += 1
-                if ice_type == "alt":
+                if self.ice_type == "alt":
                 # counting U-turn vertices
                     if v.x % 2 == 0 and v.y == 1:
                         right_arr_1 = v.right
@@ -201,13 +202,13 @@ if __name__ == "__main__":
                         help="whether we want the right most column to have alternating signs")
     args = parser.parse_args()
     GT = parseGT()
-    ice_model = Ice(GT)
     if args.alternating:
-        count = ice_model.fill_ice(GT, "alt")
+        ice_model = Ice(GT, "alt")
+        count = ice_model.fill_ice(GT)
         ice_model.visualize()
-
     else:
-        count = ice_model.fill_ice(GT, "square")
+        ice_model = Ice(GT, "square")
+        count = ice_model.fill_ice(GT)
         ice_model.visualize()
 
     for row, row_count in enumerate(count):

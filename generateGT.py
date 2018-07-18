@@ -39,8 +39,6 @@ class OrthogonalGTPatterns:
         # When top row is trivial
         if self._n == 0:
             return []
-        if self._n == 1:
-            return [list(self._row)]
         # Setup the first row
         iters = [None]*self._d
         ret = [None]*self._d
@@ -141,6 +139,7 @@ KT = OrthogonalGTPatterns([2,1], True, 1)
 for k in KT:
     print(k)
 print('\n', len(list(KT)))
+
 
 GT1 = OrthogonalGTPatterns([3,2,1],True)
 GT2 = OrthogonalGTPatterns([2,1,0],True)
