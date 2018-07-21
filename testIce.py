@@ -120,12 +120,16 @@ class Ice:
             count_row = {(-1,-1,1,1):0, (1,1,-1,-1):0, (-1,1,1,-1):0, (1,-1,-1,1):0, (-1,1,-1,1):0, (1,-1,1,-1):0, (1,-1): 0, (-1,1): 0, (1,1):0}
             for v in row:
                 count_row[(v.up, v.right, v.down, v.left)] += 1
-                if self.ice_type == "alt":
                 # counting U-turn vertices
+                if self.ice_type == "alt":
                     if v.x % 2 == 0 and v.y == 1:
                         right_arr_1 = v.right
                         right_arr_2 = self.get_vertex(v.x+1, 1).right
                         count_row[(right_arr_1, right_arr_2)] += 1
+                # count ties for KT ice
+                elif self.ice_type == "KT":
+                    if v.x % 3 == 0 and v.y == 1:
+                        count_row[(v.up, v.down)] += 1
             count.append(count_row)
         return count
 

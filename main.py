@@ -134,7 +134,7 @@ def to_latex(count):
         Directions of inward arrows: NE, SW, NW, SE, NS, EW
     """
     terms = []
-    var_names = {(-1,-1,1,1):'NE', (1,1,-1,-1):'SW', (-1,1,1,-1):'NW', (1,-1,-1,1):'SE', (-1,1,-1,1):'NS', (1,-1,1,-1):'EW', (1,-1): "A", (-1,1): "B"}
+    var_names = {(-1,-1,1,1):'NE', (1,1,-1,-1):'SW', (-1,1,1,-1):'NW', (1,-1,-1,1):'SE', (-1,1,-1,1):'NS', (1,-1,1,-1):'EW', (1,-1): "A", (-1,1): "B", (1,1):"C"}
     for i, row in enumerate(count):
         reduced = {x:y for x,y in row.items() if y!=0}
         for key, val in reduced.items():
@@ -172,17 +172,19 @@ if __name__ == "__main__":
                 ice_model = Ice(gt, "alt")
             count = ice_model.fill_ice(gt)
             ice_model.visualize()
-            terms, monomial = to_latex(count)
-            print(monomial, '\n')
-            summands.append(monomial)
-            to_be_weighted.append(terms)
         except:
             print("The following pattern does not have a corresponding ice model:")
             print(gt)
             pass
+        terms, monomial = to_latex(count)
+        print(monomial, '\n')
+        summands.append(monomial)
+        to_be_weighted.append(terms)
+
     print('# of patterns: ' + str(len(list(GT))))
     #print('+ '.join(summands))
-    """
+    if args.KT:
+        exit(0)
     if args.index:
         result = apply_weight_2(to_be_weighted, len(top_row) - 1)
     else:
@@ -191,5 +193,4 @@ if __name__ == "__main__":
         print(factor(result))
     else:
         print(result)
-    """
 
