@@ -7,6 +7,7 @@ class Ice:
         Args:
             GT: a list of lists
             vertices: a list of Vertex objects
+            ice_type (string): options include {"square", "alt", "KT"}
     """
 
     def __init__(self, GT, ice_type="alt"):
@@ -107,7 +108,10 @@ class Ice:
             for v in row:
                 print(left_arrows[v.left]+"("+str(v.x)+","+str(v.y)+")",end='')
                 if v.y == 1:
-                    print(right_arrows[v.right])
+                    if self.ice_type == "KT" and v.x % 3 == 0:
+                        print()
+                    else:
+                        print(right_arrows[v.right])
             if row[0].x == self.nrows:
                 print(''.join(["   " + down_arrows[v.down]+ "  " for v in row]+["\n"]))
 
@@ -117,19 +121,23 @@ class Ice:
         # represented as a tuple in clockwise order (NESW)
         count = []
         for row in self.vertices:
-            count_row = {(-1,-1,1,1):0, (1,1,-1,-1):0, (-1,1,1,-1):0, (1,-1,-1,1):0, (-1,1,-1,1):0, (1,-1,1,-1):0, (1,-1): 0, (-1,1): 0, (1,1):0}
+            count_row = {(-1,-1,1,1):0, (1,1,-1,-1):0, (-1,1,1,-1):0, (1,-1,-1,1):0, (-1,1,-1,1):0, (1,-1,1,-1):0, (1,-1): 0, (-1,1): 0, (1,1):0,(1,1,'t'):0,(1,-1,'t'):0,(-1,1,'t'):0}
             for v in row:
                 count_row[(v.up, v.right, v.down, v.left)] += 1
                 # counting U-turn vertices
-                if self.ice_type == "alt":
+                if self.ice_type == 'alt':
                     if v.x % 2 == 0 and v.y == 1:
                         right_arr_1 = v.right
                         right_arr_2 = self.get_vertex(v.x+1, 1).right
                         count_row[(right_arr_1, right_arr_2)] += 1
                 # count ties for KT ice
                 elif self.ice_type == "KT":
+                    if v.x % 3 == 1 and v.y == 1:
+                        right_arr_1 = v.right
+                        right_arr_2 = self.get_vertex(v.x+1, 1).right
+                        count_row[(right_arr_1, right_arr_2)] += 1
                     if v.x % 3 == 0 and v.y == 1:
-                        count_row[(v.up, v.down)] += 1
+                        count_row[(v.up, v.down,'t')] += 1
             count.append(count_row)
         return count
 
