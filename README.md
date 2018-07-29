@@ -1,13 +1,3 @@
-# Introduction
-
-Let $\lambda= (\lambda_{n}\geq\lambda_{n-1},\geq\dots,\geq \lambda_{1}>0)$ be a $n$-partition and let $s_{\lambda}^{so}$ be the character of the irreducible representation of $SO(2n+1)$ indexed by $\lambda$.  Let $\rho=(n,n-1,\dots,2,1)$. Create ice models for $SGT(\lambda+\rho)$ correponding to shifted orthogonal tableaux [Sundaram]. Using the Boltzmann weights for gamma and delta ice as defined in [Gray], and adjust the weights of U-turn vertices by a factor of $(1+tz_i)/(1+tz_i^2)$, we get a partition function $\mathcal{Z}(\lambda)$. 
-
-Define the deformation of the Weyl denominator to be:
-
-$D(z_1, z_2, .., z_n, t) =\mathbf{z}^{-\rho}\prod_{i=1}^{n}(1+tz_{i})\prod_{i<j}(1+tz_{i}z_{j})(1+z_{i}z_{j}^{-1})$, where $\mathbf{z}^{-\rho}=z_{1}^{-n}z_{2}^{-n+1}\dots z_{n}^{-1}$. 
-
-Then, $\mathcal{Z}(\lambda)=D(z_1, \dots, z_n, t)\cdot s_{\lambda}^{so}$. 
-
 # Requirements
 
 Python3, SymPy.
@@ -69,7 +59,7 @@ To see the shifted tableaux corresponding to GT patterns of a given top row, use
 ```
 $ python3 tableau.py
 ```
-## References
+# References
 
 * Brubaker, B., Bump, D., & Friedberg, S. (2011). Schur Polynomials and The Yang-Baxter Equation. *Communications in Mathematical Physics*, *308*(2), 281–301.
 * Brubaker, B., & Schultz, A. (2015). The six-vertex model and deformations of the Weyl character formula. *Journal of Algebraic Combinatorics*, *42*(4), 917–958.
